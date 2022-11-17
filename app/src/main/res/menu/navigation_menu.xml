@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/authors"
-        android:title="Authors" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:autoSizeMinTextSize="20sp"
+    tools:ignore="HardcodedText">
 
-    <item android:id="@+id/license"
-        android:title="License" />
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/account"
+            android:checked="true"
+            android:icon="@drawable/map"
+            android:title="@string/account_menu" />
+
+        <item
+            android:id="@+id/authors"
+            android:checked="true"
+            android:icon="@drawable/authors"
+            android:title="@string/authors_menu" />
+
+        <item
+            android:id="@+id/licences"
+            android:icon="@drawable/licence"
+            android:title="@string/licences_menu" />
+
+
+    </group>
+    <group
+        android:id="@+id/menu_divider"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/info"
+            android:title="@string/about_menu"/>
+    </group>
+
+
 </menu>

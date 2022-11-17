@@ -7,6 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header_navigation_drawer"
+        app:menu="@menu/navigation_menu" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -18,38 +28,25 @@
             android:layout_width="match_parent"
             android:layout_height="387dp"
             android:layout_weight="4"
-            android:background="@android:color/holo_green_light"
+            android:background="#B0B0B0"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="425dp"
                 android:layout_height="77.5dp"
                 android:layout_weight="3"
-                android:background="#26A69A"
+                android:background="#B0B0B0"
                 android:gravity="center"
                 android:orientation="vertical">
-
-<!--                <Button-->
-<!--                    android:id="@+id/hamburger_button"-->
-<!--                    style="@style/Widget.AppCompat.Button"-->
-<!--                    android:layout_width="50dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:gravity="center"-->
-<!--                    android:onClick="openNavigationView"-->
-<!--                    android:text="|||"-->
-<!--                    app:backgroundTint="@color/teal_700">-->
-
-<!--                </Button>-->
 
                 <ImageButton
                     android:id="@+id/hamburger_button"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:background="#B0B0B0"
                     android:gravity="center"
                     android:onClick="openNavigationView"
-                    app:backgroundTint="@color/teal_700"
-                    app:srcCompat="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="@color/white"
+                    android:src="@drawable/menu"
                     tools:ignore="SpeakableTextPresentCheck" />
 
             </LinearLayout>
@@ -59,28 +56,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@android:color/holo_blue_bright"
-                android:orientation="vertical">
+                android:background="#B0B0B0"
+                android:orientation="vertical"
+                android:padding="7dp">
 
 
                 <EditText
                     android:id="@+id/start_point"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="2dp"
                     android:layout_weight="1"
-                    android:background="#4DB6AC"
+                    android:background="@drawable/round_edit_text"
                     android:gravity="center"
-                    android:hint="Miejsce startowe"
+                    android:hint="@string/source"
                     android:inputType="text"></EditText>
 
                 <EditText
                     android:id="@+id/destination_point"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="2dp"
                     android:layout_weight="1"
-                    android:background="#4DB6AC"
+                    android:background="@drawable/round_edit_text"
                     android:gravity="center"
-                    android:hint="Miejsce docelowe"
+                    android:hint="@string/end"
                     tools:ignore="TouchTargetSizeCheck"></EditText>
 
 
@@ -90,7 +90,7 @@
                 android:layout_width="425dp"
                 android:layout_height="match_parent"
                 android:layout_weight="3"
-                android:background="#26A69A"
+                android:background="#B0B0B0"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -98,16 +98,15 @@
                     android:id="@+id/search_button"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:background="#B0B0B0"
                     android:gravity="center"
                     android:onClick="routeSearch"
-                    app:backgroundTint="@color/teal_700"
                     app:srcCompat="?android:attr/actionModeWebSearchDrawable"
                     app:tint="@color/white"
                     tools:ignore="SpeakableTextPresentCheck" />
             </LinearLayout>
 
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,30 +118,11 @@
             <org.osmdroid.views.MapView
                 android:id="@+id/map"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
+                android:layout_height="fill_parent" />
         </LinearLayout>
 
 
     </LinearLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="#26A69A"
-        app:menu="@menu/navigation_menu">
-
-    </com.google.android.material.navigation.NavigationView>
-
-
-    <!--    <TextView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Hello World!"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
