@@ -25,10 +25,9 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private var okHttpClient = OkHttpClient()
-
-    private lateinit var myLocationOverlay : MyLocationNewOverlay
-    private lateinit var navigationView : DrawerLayout
-    private lateinit var osmdroidMap : MapView
+    private lateinit var myLocationOverlay: MyLocationNewOverlay
+    private lateinit var navigationView: DrawerLayout
+    private lateinit var osmdroidMap: MapView
     private lateinit var roadManager: RoadManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +35,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Configuration.getInstance().userAgentValue = "application/1.0"
 
+        navigationMenu()
+        hideActionBar()
+    }
+
+    private fun hideActionBar() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.hide()
+    }
+
+    private fun navigationMenu() {
         navigationView = findViewById(R.id.drawer_layout)
         navigationView.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT)
 
@@ -45,10 +54,12 @@ class MainActivity : AppCompatActivity() {
         roadManager = OSRMRoadManager(this, Configuration.getInstance().userAgentValue)
 
         myLocationOverlay.enableMyLocation()
-        myLocationOverlay.runOnFirstFix { runOnUiThread {
-            osmdroidMap.controller.animateTo(myLocationOverlay.myLocation)
-            osmdroidMap.controller.setZoom(20)
-        }}
+        myLocationOverlay.runOnFirstFix {
+            runOnUiThread {
+                osmdroidMap.controller.animateTo(myLocationOverlay.myLocation)
+                osmdroidMap.controller.setZoom(20)
+            }
+        }
     }
 
     fun openNavigationView(view: View) {
@@ -60,12 +71,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun routeSearch(view: View) {
-        val destinationPoint : EditText = findViewById(R.id.destination_point)
-        val startPoint : EditText = findViewById(R.id.start_point)
+        val destinationPoint: EditText = findViewById(R.id.destination_point)
+        val startPoint: EditText = findViewById(R.id.start_point)
         val startPointAddress = findCoordinates(startPoint.text.toString())
         val destinationPointAddress = findCoordinates(destinationPoint.text.toString())
         val startPointGeoPoint = GeoPoint(startPointAddress.latitude, startPointAddress.longitude)
-        val destinationPointGeoPoint = GeoPoint(destinationPointAddress.latitude, destinationPointAddress.longitude)
+        val destinationPointGeoPoint =
+            GeoPoint(destinationPointAddress.latitude, destinationPointAddress.longitude)
         val geoPointList = ArrayList<GeoPoint>()
         geoPointList.add(startPointGeoPoint)
         geoPointList.add(destinationPointGeoPoint)
@@ -82,8 +94,9 @@ class MainActivity : AppCompatActivity() {
         osmdroidMap.controller.setZoom(7.5)
     }
 
-    fun findCoordinates(placeName: String) : Address {
-        val requestUrl = "https://nominatim.openstreetmap.org/search.php?format=json&limit=1&q=$placeName"
+    private fun findCoordinates(placeName: String): Address {
+        val requestUrl =
+            "https://nominatim.openstreetmap.org/search.php?format=json&limit=1&q=$placeName"
         val nominatimRequest = Request.Builder().url(requestUrl).build()
         val address = Address(Locale.ENGLISH)
         val countDownLatch = CountDownLatch(1)
@@ -91,8 +104,9 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             var nominatimResponse = ""
 
-            okHttpClient.newCall(nominatimRequest).execute().use { response -> nominatimResponse =
-                response.body?.string() ?: ""
+            okHttpClient.newCall(nominatimRequest).execute().use { response ->
+                nominatimResponse =
+                    response.body?.string() ?: ""
             }
 
             val jsonElement = JsonParser.parseString(nominatimResponse).asJsonArray[0]

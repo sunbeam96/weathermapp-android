@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">weathermapp-android</string>
+    <string name="header_title">Title header</string>
+    <string name="header_text">header</string>
+    <string name="source">Start</string>
+    <string name="end">Finish</string>
+    <string name="account_menu">Account</string>
+    <string name="authors_menu">Authors</string>
+    <string name="licences_menu">Licences</string>
+    <string name="about_menu">About</string>
 </resources>
