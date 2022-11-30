@@ -7,9 +7,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.gson.JsonParser
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
@@ -18,13 +15,11 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import java.util.*
-import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
-    private var okHttpClient = OkHttpClient()
+    private val navigation = Navigation()
     private lateinit var myLocationOverlay: MyLocationNewOverlay
     private lateinit var navigationView: DrawerLayout
     private lateinit var osmdroidMap: MapView
@@ -38,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         navigationMenu()
         hideActionBar()
     }
-
+    
     private fun hideActionBar() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.hide()
@@ -73,15 +68,27 @@ class MainActivity : AppCompatActivity() {
     fun routeSearch(view: View) {
         val destinationPoint: EditText = findViewById(R.id.destination_point)
         val startPoint: EditText = findViewById(R.id.start_point)
-        val startPointAddress = findCoordinates(startPoint.text.toString())
-        val destinationPointAddress = findCoordinates(destinationPoint.text.toString())
-        val startPointGeoPoint = GeoPoint(startPointAddress.latitude, startPointAddress.longitude)
-        val destinationPointGeoPoint =
-            GeoPoint(destinationPointAddress.latitude, destinationPointAddress.longitude)
-        val geoPointList = ArrayList<GeoPoint>()
-        geoPointList.add(startPointGeoPoint)
-        geoPointList.add(destinationPointGeoPoint)
+        val startPointAddress = navigation.findCoordinates(startPoint.text.toString())
+        val destinationPointAddress = navigation.findCoordinates(destinationPoint.text.toString())
+        generateRoadTrace(startPointAddress, destinationPointAddress)
+    }
 
+    private fun generateRoadTrace(
+        startPointAddress: Address,
+        destinationPointAddress: Address
+    ) {
+        val (destinationPointGeoPoint, geoPointList) = navigation.pair(
+            startPointAddress,
+            destinationPointAddress
+        )
+
+        getRoad(geoPointList, destinationPointGeoPoint)
+    }
+
+    private fun getRoad(
+        geoPointList: ArrayList<GeoPoint>,
+        destinationPointGeoPoint: GeoPoint
+    ) {
         thread(start = true) {
             val road = roadManager.getRoad(geoPointList)
             val roadOverlay = RoadManager.buildRoadOverlay(road)
@@ -92,31 +99,5 @@ class MainActivity : AppCompatActivity() {
 
         osmdroidMap.controller.animateTo(destinationPointGeoPoint)
         osmdroidMap.controller.setZoom(7.5)
-    }
-
-    private fun findCoordinates(placeName: String): Address {
-        val requestUrl =
-            "https://nominatim.openstreetmap.org/search.php?format=json&limit=1&q=$placeName"
-        val nominatimRequest = Request.Builder().url(requestUrl).build()
-        val address = Address(Locale.ENGLISH)
-        val countDownLatch = CountDownLatch(1)
-
-        thread(start = true) {
-            var nominatimResponse = ""
-
-            okHttpClient.newCall(nominatimRequest).execute().use { response ->
-                nominatimResponse =
-                    response.body?.string() ?: ""
-            }
-
-            val jsonElement = JsonParser.parseString(nominatimResponse).asJsonArray[0]
-            address.latitude = jsonElement.asJsonObject.get("lat").asDouble
-            address.longitude = jsonElement.asJsonObject.get("lon").asDouble
-            countDownLatch.countDown()
-        }
-
-        countDownLatch.await()
-
-        return address
     }
 }

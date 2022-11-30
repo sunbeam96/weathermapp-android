@@ -70,7 +70,7 @@
                     android:background="@drawable/round_edit_text"
                     android:gravity="center"
                     android:hint="@string/source"
-                    android:inputType="text"></EditText>
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/destination_point"
@@ -81,7 +81,7 @@
                     android:background="@drawable/round_edit_text"
                     android:gravity="center"
                     android:hint="@string/end"
-                    tools:ignore="TouchTargetSizeCheck"></EditText>
+                    tools:ignore="TouchTargetSizeCheck" />
 
 
             </LinearLayout>
