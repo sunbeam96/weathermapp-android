@@ -70,7 +70,8 @@
                     android:background="@drawable/round_edit_text"
                     android:gravity="center"
                     android:hint="@string/source"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="#4E4E4E" />
 
                 <EditText
                     android:id="@+id/destination_point"
@@ -81,6 +82,7 @@
                     android:background="@drawable/round_edit_text"
                     android:gravity="center"
                     android:hint="@string/end"
+                    android:textColor="#4E4E4E"
                     tools:ignore="TouchTargetSizeCheck" />
 
 
@@ -96,8 +98,8 @@
 
                 <ImageButton
                     android:id="@+id/search_button"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="61dp"
+                    android:layout_height="78dp"
                     android:background="#B0B0B0"
                     android:gravity="center"
                     android:onClick="routeSearch"

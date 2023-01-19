@@ -13,6 +13,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.concurrent.thread
@@ -24,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: DrawerLayout
     private lateinit var osmdroidMap: MapView
     private lateinit var roadManager: RoadManager
+    private var startingPoint: String = ""
+    private var endingPoint: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +71,10 @@ class MainActivity : AppCompatActivity() {
     fun routeSearch(view: View) {
         val destinationPoint: EditText = findViewById(R.id.destination_point)
         val startPoint: EditText = findViewById(R.id.start_point)
-        val startPointAddress = navigation.findCoordinates(startPoint.text.toString())
-        val destinationPointAddress = navigation.findCoordinates(destinationPoint.text.toString())
+        startingPoint = startPoint.text.toString()
+        endingPoint = startPoint.text.toString()
+        val startPointAddress = navigation.findCoordinates(startingPoint)
+        val destinationPointAddress = navigation.findCoordinates(endingPoint)
         generateRoadTrace(startPointAddress, destinationPointAddress)
     }
 
@@ -89,15 +94,37 @@ class MainActivity : AppCompatActivity() {
         geoPointList: ArrayList<GeoPoint>,
         destinationPointGeoPoint: GeoPoint
     ) {
-        thread(start = true) {
+        osmdroidMap.overlays.clear()
+
+        Thread(Runnable {
             val road = roadManager.getRoad(geoPointList)
             val roadOverlay = RoadManager.buildRoadOverlay(road)
-            osmdroidMap.overlays.clear()
             osmdroidMap.overlays.add(roadOverlay)
             osmdroidMap.invalidate()
-        }
+        }).start()
+        Thread(Runnable {
+            // GET WEATHER FOR ROAD
+            var weatherHandler = ForecastHandler()
+            val startWeather = weatherHandler.getCurrentWeatherForLocation(startingPoint)
+            val endWeather = weatherHandler.getCurrentWeatherForLocation(endingPoint)
 
+            val startWeatherMarker = Marker(osmdroidMap)
+            startWeatherMarker.position = geoPointList.get(0)
+            startWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            startWeatherMarker.setTitle(startWeather.getTemp().toString() + "*C");
+            osmdroidMap.overlays.add(startWeatherMarker)
+
+            val endWeatherMarker = Marker(osmdroidMap)
+            endWeatherMarker.position = geoPointList.get(0)
+            endWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            endWeatherMarker.setTitle(endWeather.getTemp().toString() + "*C");
+            osmdroidMap.overlays.add(endWeatherMarker)
+
+            osmdroidMap.invalidate()
+        }).start()
         osmdroidMap.controller.animateTo(destinationPointGeoPoint)
         osmdroidMap.controller.setZoom(7.5)
+        osmdroidMap.invalidate()
+
     }
 }
