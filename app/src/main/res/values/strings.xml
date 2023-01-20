@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">weathermapp-android</string>
+    <string name="app_name">WeatherMapp</string>
     <string name="header_title">WeatherMapp</string>
     <string name="header_text">the WWSIS school app</string>
     <string name="source">Start location</string>

@@ -1,8 +1,12 @@
 package com.weather.mapp
-import com.openmeteo.api.OpenMeteo
-import com.openmeteo.api.common.units.TemperatureUnit
+import android.util.Log
+import org.osmdroid.util.GeoPoint
+import java.net.URL
+import org.json.JSONObject
 
 class ForecastHandler {
+    val forecastUrl: String = "https://api.open-meteo.com/v1/forecast?"
+    private val navigation = Navigation()
 
     private fun weatherCodeToWeatherType(code: String): WeatherType {
         if (code.toInt() == 0)
@@ -19,21 +23,33 @@ class ForecastHandler {
             return WeatherType.RAINY
     }
 
-    fun getCurrentWeatherForLocation(placeName: String): WeatherContainer {
-        val openMeteoResp = OpenMeteo(placeName)
-            .currentWeather(TemperatureUnit.Celsius)
-            .getOrNull()
+    fun weatherTypeToString(type: WeatherType): String{
+        if (type == WeatherType.SUNNY)
+            return "Sunny"
+        if (type == WeatherType.SNOWY)
+            return "Snowy"
+        if (type == WeatherType.FOGGY)
+            return "Foggy"
+        if (type == WeatherType.CLOUDY)
+            return "Cloudy"
+        else
+            return "Rainy"
+    }
 
-        var tempContainer: WeatherContainer = WeatherContainer(WeatherType.SUNNY,0.0)
-        openMeteoResp?.run {
-            currentWeather?.run {
-                val temp = "$temperature".toDouble()
-                println("DEBUG TEMP $temperature")
-                val weathercode = "$weatherCode"
-                return WeatherContainer(weatherCodeToWeatherType(weathercode), temp)
-            }
-        }
-        return tempContainer
+    fun constructForecastRequest(geoPoint: GeoPoint): String{
+        return forecastUrl + "latitude=" + geoPoint.latitude.toString() + "&longitude=" + geoPoint.longitude.toString() + "&current_weather=true"
+    }
+
+    fun getCurrentWeatherForLocation(geoPoint: GeoPoint): WeatherContainer {
+        val meteoRequest = constructForecastRequest(geoPoint)
+        val meteoApiResp = URL(meteoRequest).readText()
+        Log.d("DEBUG", meteoApiResp)
+
+        val jsonObj = JSONObject(meteoApiResp.substring(meteoApiResp.indexOf("{"), meteoApiResp.lastIndexOf("}") + 1))
+        val currentWeatherJson = JSONObject(jsonObj.getString("current_weather"))
+        val temp = currentWeatherJson.getString("temperature")
+        val code = currentWeatherJson.getString("weathercode")
+        return WeatherContainer(weatherCodeToWeatherType(code),temp.toDouble())
     }
 }
 

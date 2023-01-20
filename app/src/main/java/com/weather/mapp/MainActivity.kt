@@ -17,6 +17,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.concurrent.thread
+import android.util.Log
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,10 +70,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun routeSearch(view: View) {
+        Log.d("DEBUG", "Running routeSearch")
         val destinationPoint: EditText = findViewById(R.id.destination_point)
         val startPoint: EditText = findViewById(R.id.start_point)
         startingPoint = startPoint.text.toString()
-        endingPoint = startPoint.text.toString()
+        endingPoint = destinationPoint.text.toString()
+        Log.d("DEBUG", "Chosen start: " + startingPoint)
+        Log.d("DEBUG", "Chosen finish: " + endingPoint)
         val startPointAddress = navigation.findCoordinates(startingPoint)
         val destinationPointAddress = navigation.findCoordinates(endingPoint)
         generateRoadTrace(startPointAddress, destinationPointAddress)
@@ -86,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             startPointAddress,
             destinationPointAddress
         )
-
+        Log.d("DEBUG", "Generating road trace")
         getRoad(geoPointList, destinationPointGeoPoint)
     }
 
@@ -94,34 +98,42 @@ class MainActivity : AppCompatActivity() {
         geoPointList: ArrayList<GeoPoint>,
         destinationPointGeoPoint: GeoPoint
     ) {
+        Log.d("DEBUG", "Clearing overlays")
         osmdroidMap.overlays.clear()
 
         Thread(Runnable {
+            Log.d("DEBUG", "Running in roadmanager.getRoad thread")
+
             val road = roadManager.getRoad(geoPointList)
             val roadOverlay = RoadManager.buildRoadOverlay(road)
             osmdroidMap.overlays.add(roadOverlay)
+            Log.d("DEBUG", "Map invalidate()")
+
             osmdroidMap.invalidate()
         }).start()
         Thread(Runnable {
             // GET WEATHER FOR ROAD
+            Log.d("DEBUG", "Running in ForecastHandler thread")
+
             var weatherHandler = ForecastHandler()
-            val startWeather = weatherHandler.getCurrentWeatherForLocation(startingPoint)
-            val endWeather = weatherHandler.getCurrentWeatherForLocation(endingPoint)
+            val startWeather = weatherHandler.getCurrentWeatherForLocation(geoPointList.get(0))
+            val endWeather = weatherHandler.getCurrentWeatherForLocation(geoPointList.get(1))
 
             val startWeatherMarker = Marker(osmdroidMap)
             startWeatherMarker.position = geoPointList.get(0)
             startWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            startWeatherMarker.setTitle(startWeather.getTemp().toString() + "*C");
+            startWeatherMarker.setTitle(startWeather.getTemp().toString() + "*C " + weatherHandler.weatherTypeToString(startWeather.getType()));
             osmdroidMap.overlays.add(startWeatherMarker)
 
             val endWeatherMarker = Marker(osmdroidMap)
-            endWeatherMarker.position = geoPointList.get(0)
+            endWeatherMarker.position = geoPointList.get(1)
             endWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            endWeatherMarker.setTitle(endWeather.getTemp().toString() + "*C");
+            endWeatherMarker.setTitle(endWeather.getTemp().toString() + "*C " + weatherHandler.weatherTypeToString(endWeather.getType()));
             osmdroidMap.overlays.add(endWeatherMarker)
 
             osmdroidMap.invalidate()
         }).start()
+        Log.d("DEBUG", "Map controller animations and zoom")
         osmdroidMap.controller.animateTo(destinationPointGeoPoint)
         osmdroidMap.controller.setZoom(7.5)
         osmdroidMap.invalidate()

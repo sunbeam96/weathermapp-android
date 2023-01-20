@@ -1,4 +1,5 @@
 package com.weather.mapp
+import android.util.Log
 
 class WeatherContainer(type: WeatherType, temperature: Double)
 {
@@ -6,6 +7,7 @@ class WeatherContainer(type: WeatherType, temperature: Double)
     private var weathertype: WeatherType = WeatherType.SUNNY
 
     init {
+        Log.d("DEBUG", "Filling weather container with temp: " + temperature.toString())
         temp = temperature
         weathertype = type
     }
