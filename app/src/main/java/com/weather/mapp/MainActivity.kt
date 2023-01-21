@@ -1,5 +1,6 @@
 package com.weather.mapp
 
+import android.app.AlertDialog
 import android.location.Address
 import android.os.Bundle
 import android.view.Gravity
@@ -19,7 +20,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.concurrent.thread
 import android.util.Log
 
-
 class MainActivity : AppCompatActivity() {
     private val navigation = Navigation()
     private lateinit var myLocationOverlay: MyLocationNewOverlay
@@ -37,6 +37,14 @@ class MainActivity : AppCompatActivity() {
         navigationMenu()
         hideActionBar()
     }
+
+    private fun hasLocationIllegalCharacters(location: String): Boolean{
+        for (character in location){
+            if (character !in 'A'..'Z' || character !in 'a'..'z' || character != ' ')
+                return true
+        }
+        return false
+    }
     
     private fun hideActionBar() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -52,13 +60,25 @@ class MainActivity : AppCompatActivity() {
         myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), osmdroidMap)
         roadManager = OSRMRoadManager(this, Configuration.getInstance().userAgentValue)
 
+        val startLocation = GeoPoint(52.23, 21.01)
         myLocationOverlay.enableMyLocation()
+        osmdroidMap.controller.animateTo(startLocation)
+        osmdroidMap.controller.setZoom(4.5)
+
         myLocationOverlay.runOnFirstFix {
             runOnUiThread {
                 osmdroidMap.controller.animateTo(myLocationOverlay.myLocation)
-                osmdroidMap.controller.setZoom(20)
+                osmdroidMap.controller.setZoom(2.5)
             }
         }
+    }
+
+    fun showAbout(view: View){
+        val alertBuilder = AlertDialog.Builder(this)
+        alertBuilder.setTitle("About")
+        alertBuilder.setMessage("WWSIS school project by Grzegorz Kędzior @grzesiekkedzior, Dawid Żwikiewicz @S1NNR916,\n" +
+                "Marek Borowski @maro4444, Kuba Łukaszczyk @sunbeam96")
+        alertBuilder.show()
     }
 
     fun openNavigationView(view: View) {
@@ -75,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         val startPoint: EditText = findViewById(R.id.start_point)
         startingPoint = startPoint.text.toString()
         endingPoint = destinationPoint.text.toString()
+
         Log.d("DEBUG", "Chosen start: " + startingPoint)
         Log.d("DEBUG", "Chosen finish: " + endingPoint)
         val startPointAddress = navigation.findCoordinates(startingPoint)
