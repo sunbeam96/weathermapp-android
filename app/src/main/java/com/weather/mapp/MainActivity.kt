@@ -139,17 +139,18 @@ class MainActivity : AppCompatActivity() {
             var weatherHandler = ForecastHandler()
             val startWeather = weatherHandler.getCurrentWeatherForLocation(geoPointList.get(0))
             val endWeather = weatherHandler.getCurrentWeatherForLocation(geoPointList.get(1))
-
+            val endArrivalWeather = weatherHandler.getWeatherForLocationAfterGivenTime(geoPointList.get(1), roadManager.getRoad(geoPointList).mDuration)
             val startWeatherMarker = Marker(osmdroidMap)
             startWeatherMarker.position = geoPointList.get(0)
             startWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            startWeatherMarker.setTitle(startWeather.getTemp().toString() + "*C " + weatherHandler.weatherTypeToString(startWeather.getType()));
+            startWeatherMarker.setTitle("Now: " + startWeather.getTemp().toString() + "°C " + weatherHandler.weatherTypeToString(startWeather.getType()));
             osmdroidMap.overlays.add(startWeatherMarker)
 
             val endWeatherMarker = Marker(osmdroidMap)
             endWeatherMarker.position = geoPointList.get(1)
             endWeatherMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            endWeatherMarker.setTitle(endWeather.getTemp().toString() + "*C " + weatherHandler.weatherTypeToString(endWeather.getType()));
+            endWeatherMarker.setTitle("Now:" + endWeather.getTemp().toString() + "°C " + weatherHandler.weatherTypeToString(endWeather.getType()) + "\n"
+                + "At arrival: " + endArrivalWeather.getTemp().toString() + "°C "+ weatherHandler.weatherTypeToString(endArrivalWeather.getType()));
             osmdroidMap.overlays.add(endWeatherMarker)
 
             osmdroidMap.invalidate()

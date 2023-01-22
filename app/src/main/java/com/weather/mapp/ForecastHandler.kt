@@ -1,8 +1,9 @@
 package com.weather.mapp
 import android.util.Log
+import org.json.JSONObject
 import org.osmdroid.util.GeoPoint
 import java.net.URL
-import org.json.JSONObject
+import java.util.*
 
 class ForecastHandler {
     val forecastUrl: String = "https://api.open-meteo.com/v1/forecast?"
@@ -36,12 +37,41 @@ class ForecastHandler {
             return "Rainy"
     }
 
-    fun constructForecastRequest(geoPoint: GeoPoint): String{
+    private fun constructForecastHourlyRequest(geoPoint: GeoPoint): String{
+        return forecastUrl + "latitude=" + geoPoint.latitude.toString() + "&longitude=" + geoPoint.longitude.toString() + "&hourly=temperature_2m,weathercode&current_weather=true"
+    }
+
+    private fun constructForecastNowRequest(geoPoint: GeoPoint): String{
         return forecastUrl + "latitude=" + geoPoint.latitude.toString() + "&longitude=" + geoPoint.longitude.toString() + "&current_weather=true"
     }
 
+    fun getWeatherForLocationAfterGivenTime(geoPoint: GeoPoint, timeToPass: Double): WeatherContainer {
+        val meteoRequest = constructForecastHourlyRequest(geoPoint)
+        val meteoApiResp = URL(meteoRequest).readText()
+        Log.d("DEBUG", meteoApiResp)
+
+        val jsonObj = JSONObject(meteoApiResp.substring(meteoApiResp.indexOf("{"), meteoApiResp.lastIndexOf("}") + 1))
+        val currentWeatherJson = JSONObject(jsonObj.getString("current_weather"))
+        val timeToCheck = Calendar.getInstance()
+        timeToCheck.add(Calendar.SECOND, timeToPass.toInt());
+
+        val hourlyValues = JSONObject(jsonObj.getString("hourly"))
+        val timeValues = hourlyValues.getJSONArray("time")
+        var i: Int = 0
+        for (i in 0 until timeValues!!.length()) {
+            if (i.toString().contains("T" + timeToCheck.get(Calendar.HOUR_OF_DAY))
+                && i.toString().contains("-" + timeToCheck.get(Calendar.DAY_OF_MONTH)))
+                break
+        }
+        val tempValues = hourlyValues.getJSONArray("temperature_2m")
+        val temp = tempValues.get(i)
+        val weatherCodeValues = hourlyValues.getJSONArray("weathercode")
+        val code = weatherCodeValues.get(i)
+        return WeatherContainer(weatherCodeToWeatherType(code.toString()),temp.toString().toDouble())
+    }
+
     fun getCurrentWeatherForLocation(geoPoint: GeoPoint): WeatherContainer {
-        val meteoRequest = constructForecastRequest(geoPoint)
+        val meteoRequest = constructForecastNowRequest(geoPoint)
         val meteoApiResp = URL(meteoRequest).readText()
         Log.d("DEBUG", meteoApiResp)
 
