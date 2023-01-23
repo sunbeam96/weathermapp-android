@@ -95,12 +95,14 @@ class MainActivity : AppCompatActivity() {
         val startPoint: EditText = findViewById(R.id.start_point)
         startingPoint = startPoint.text.toString()
         endingPoint = destinationPoint.text.toString()
+        if (startingPoint != "" && endingPoint != "") {
+            Log.d("DEBUG", "Chosen start: " + startingPoint)
+            Log.d("DEBUG", "Chosen finish: " + endingPoint)
+            val startPointAddress = navigation.findCoordinates(startingPoint)
+            val destinationPointAddress = navigation.findCoordinates(endingPoint)
+            generateRoadTrace(startPointAddress, destinationPointAddress)
+        }
 
-        Log.d("DEBUG", "Chosen start: " + startingPoint)
-        Log.d("DEBUG", "Chosen finish: " + endingPoint)
-        val startPointAddress = navigation.findCoordinates(startingPoint)
-        val destinationPointAddress = navigation.findCoordinates(endingPoint)
-        generateRoadTrace(startPointAddress, destinationPointAddress)
     }
 
     private fun generateRoadTrace(
