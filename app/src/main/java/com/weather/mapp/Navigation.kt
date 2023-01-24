@@ -37,12 +37,12 @@ class Navigation {
         thread(start = true) {
             var nominatimResponse = ""
 
-            okHttpClient.newCall(nominatimRequest).execute().use { response ->
-                nominatimResponse =
-                    response.body?.string() ?: ""
-            }
+                okHttpClient.newCall(nominatimRequest).execute().use { response ->
+                    nominatimResponse =
+                        response.body!!.string() ?: ""
+                }
 
-            getLocalization(nominatimResponse, address, countDownLatch)
+                getLocalization(nominatimResponse, address, countDownLatch)
         }
     }
 
