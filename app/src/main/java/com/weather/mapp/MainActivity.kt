@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         osmdroidMap = findViewById(R.id.map)
         osmdroidMap.setTileSource(TileSourceFactory.MAPNIK)
+        osmdroidMap.setMultiTouchControls(true)
         myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), osmdroidMap)
         roadManager = OSRMRoadManager(this, Configuration.getInstance().userAgentValue)
 
