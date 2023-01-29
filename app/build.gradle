@@ -30,6 +30,14 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures{
+        viewBinding = true
+    }
+
+    dataBinding{
+        enable = true
+    }
 }
 
 dependencies {
@@ -46,4 +54,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:20.1.0'
     implementation 'com.google.firebase:firebase-firestore:24.4.1'
     implementation 'com.open-meteo:open-meteo-api-kotlin:0.4.0-alpha.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
