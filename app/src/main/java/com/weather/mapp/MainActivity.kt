@@ -1,6 +1,7 @@
 package com.weather.mapp
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.location.Address
 import android.os.Bundle
 import android.view.Gravity
@@ -19,6 +20,8 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.concurrent.thread
 import android.util.Log
+import androidx.core.view.GravityCompat
+import com.weather.mapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val navigation = Navigation()
@@ -28,14 +31,40 @@ class MainActivity : AppCompatActivity() {
     private lateinit var roadManager: RoadManager
     private var startingPoint: String = ""
     private var endingPoint: String = ""
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+//        setContentView(R.layout.activity_main)
         Configuration.getInstance().userAgentValue = "application/1.0"
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        intent = Intent(this, MainActivity2::class.java)
 
         navigationMenu()
         hideActionBar()
+
+
+        with(binding){
+            hamburgerButton.setOnClickListener{
+                navigationView.openDrawer(GravityCompat.START)
+            }
+        }
+
+        binding.apply {
+            navView.setNavigationItemSelectedListener {
+                when(it.itemId){
+                    R.id.account -> {}
+                    R.id.authors -> {
+                        startActivity(intent)
+                    }
+                    R.id.licences -> {}
+                    R.id.about -> {}
+                }
+                true
+            }
+        }
     }
 
     private fun hasLocationIllegalCharacters(location: String): Boolean{
@@ -53,10 +82,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigationMenu() {
         navigationView = findViewById(R.id.drawer_layout)
-        navigationView.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT)
+//        navigationView.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT)
 
         osmdroidMap = findViewById(R.id.map)
         osmdroidMap.setTileSource(TileSourceFactory.MAPNIK)
+        osmdroidMap.setMultiTouchControls(true)
         myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), osmdroidMap)
         roadManager = OSRMRoadManager(this, Configuration.getInstance().userAgentValue)
 
@@ -73,22 +103,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showAbout(view: View){
+    /*fun showAbout(view: View){
         val alertBuilder = AlertDialog.Builder(this)
         alertBuilder.setTitle("About")
         alertBuilder.setMessage("WWSIS school project by Grzegorz Kędzior @grzesiekkedzior, Dawid Żwikiewicz @S1NNR916,\n" +
                 "Marek Borowski @maro4444, Kuba Łukaszczyk @sunbeam96")
         alertBuilder.show()
-    }
+    }*/
 
-    fun openNavigationView(view: View) {
-        if (navigationView.isDrawerOpen(Gravity.START)) {
-            navigationView.closeDrawer(Gravity.START)
+    /*fun openNavigationView(view: View) {
+        if (navigationView.isDrawerOpen(GravityCompat.START)) {
+            navigationView.closeDrawer(GravityCompat.START)
         } else {
-            navigationView.openDrawer(Gravity.START)
+            navigationView.openDrawer(GravityCompat.START)
         }
     }
-
+*/
     fun routeSearch(view: View) {
         Log.d("DEBUG", "Running routeSearch")
         val destinationPoint: EditText = findViewById(R.id.destination_point)
@@ -163,4 +193,7 @@ class MainActivity : AppCompatActivity() {
         osmdroidMap.invalidate()
 
     }
+
+
+
 }
