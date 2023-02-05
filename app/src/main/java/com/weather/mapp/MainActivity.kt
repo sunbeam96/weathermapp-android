@@ -26,12 +26,12 @@ import com.weather.mapp.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private val navigation = Navigation()
     private lateinit var myLocationOverlay: MyLocationNewOverlay
-    private lateinit var navigationView: DrawerLayout
+    private var navigationView: DrawerLayout? = null
     private lateinit var osmdroidMap: MapView
     private lateinit var roadManager: RoadManager
     private var startingPoint: String = ""
     private var endingPoint: String = ""
-    private lateinit var binding: ActivityMainBinding
+    private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,27 +39,28 @@ class MainActivity : AppCompatActivity() {
         Configuration.getInstance().userAgentValue = "application/1.0"
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        intent = Intent(this, MainActivity2::class.java)
+        setContentView(binding!!.root)
+        var intent2 = Intent(this, MainActivity2::class.java)
+        var intent3 = Intent(this, MainActivity3::class.java)
 
         navigationMenu()
         hideActionBar()
 
 
         with(binding){
-            hamburgerButton.setOnClickListener{
-                navigationView.openDrawer(GravityCompat.START)
+            this!!.hamburgerButton?.setOnClickListener{
+                navigationView?.openDrawer(GravityCompat.START)
             }
         }
 
-        binding.apply {
+        binding?.apply {
             navView.setNavigationItemSelectedListener {
                 when(it.itemId){
                     R.id.account -> {}
                     R.id.authors -> {
-                        startActivity(intent)
+                        startActivity(intent2)
                     }
-                    R.id.licences -> {}
+                    R.id.licences -> {startActivity(intent3)}
                     R.id.about -> {}
                 }
                 true
