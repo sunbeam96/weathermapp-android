@@ -1,6 +1,7 @@
 package com.weather.mapp
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.location.Address
 import android.os.Bundle
@@ -20,6 +21,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.concurrent.thread
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.GravityCompat
 import com.weather.mapp.databinding.ActivityMainBinding
 
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         with(binding){
             this!!.hamburgerButton?.setOnClickListener{
                 navigationView?.openDrawer(GravityCompat.START)
+
             }
         }
 
@@ -121,6 +124,7 @@ class MainActivity : AppCompatActivity() {
     }
 */
     fun routeSearch(view: View) {
+        view.hideKeyboard()
         Log.d("DEBUG", "Running routeSearch")
         val destinationPoint: EditText = findViewById(R.id.destination_point)
         val startPoint: EditText = findViewById(R.id.start_point)
@@ -193,6 +197,11 @@ class MainActivity : AppCompatActivity() {
         osmdroidMap.controller.setZoom(7.5)
         osmdroidMap.invalidate()
 
+    }
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
 
