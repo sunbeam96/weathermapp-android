@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
         Configuration.getInstance().userAgentValue = "application/1.0"
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -86,8 +85,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigationMenu() {
         navigationView = findViewById(R.id.drawer_layout)
-//        navigationView.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT)
-
         osmdroidMap = findViewById(R.id.map)
         osmdroidMap.setTileSource(TileSourceFactory.MAPNIK)
         osmdroidMap.setMultiTouchControls(true)
@@ -107,22 +104,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*fun showAbout(view: View){
-        val alertBuilder = AlertDialog.Builder(this)
-        alertBuilder.setTitle("About")
-        alertBuilder.setMessage("WWSIS school project by Grzegorz Kędzior @grzesiekkedzior, Dawid Żwikiewicz @S1NNR916,\n" +
-                "Marek Borowski @maro4444, Kuba Łukaszczyk @sunbeam96")
-        alertBuilder.show()
-    }*/
-
-    /*fun openNavigationView(view: View) {
-        if (navigationView.isDrawerOpen(GravityCompat.START)) {
-            navigationView.closeDrawer(GravityCompat.START)
-        } else {
-            navigationView.openDrawer(GravityCompat.START)
-        }
-    }
-*/
     fun routeSearch(view: View) {
         view.hideKeyboard()
         Log.d("DEBUG", "Running routeSearch")
